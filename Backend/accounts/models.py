@@ -45,7 +45,7 @@ class UserModelManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    
+
     GENDER_CHOICES = (
         ('M', 'Male'),
         ('F', 'Female'),
@@ -98,7 +98,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 
-class Skills(models.Model):
+class Skill(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     skill_text = models.CharField(max_length=350)
