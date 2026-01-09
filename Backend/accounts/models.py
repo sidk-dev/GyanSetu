@@ -52,11 +52,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         ('O', 'Other'),
     )
 
-    first_name = models.CharField("first name", max_length=150)
-    last_name = models.CharField("last name", max_length=150)
+    first_name = models.CharField("First Name", max_length=150)
+    last_name = models.CharField("Last Name", max_length=150)
     email = models.EmailField(unique=True)
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default="M")
-    date_of_birth = models.DateField()
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
 
     # credits
     credits = models.PositiveIntegerField(default=15)
