@@ -1,8 +1,5 @@
-from accounts.utils.password_reset_email import send_password_reset_email
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .models import Skill, User
-from .serializers import ChangePasswordSerializer, UserSerializer, validate_password_rules
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 from rest_framework import status
@@ -11,6 +8,10 @@ from rest_framework import status
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
+
+from .models import Skill, User
+from .serializers import ChangePasswordSerializer, UserSerializer, validate_password_rules
+from accounts.utils.password_reset_email import send_password_reset_email
 
 
 @api_view(['POST'])
