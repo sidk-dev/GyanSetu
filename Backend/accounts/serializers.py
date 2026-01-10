@@ -1,10 +1,11 @@
-import re
 from rest_framework import serializers
 from datetime import date
 from .models import User
 
 
 def validate_password_rules(password):
+    if len(password) > 128:
+        raise serializers.ValidationError("Password must be less than 128 characters.")
     if len(password) < 6:
         raise serializers.ValidationError("Password must be at least 6 characters long.")
     if password.isdigit():
@@ -15,7 +16,6 @@ def validate_password_rules(password):
 class UserSerializer(serializers.ModelSerializer):
     age = serializers.SerializerMethodField()
     password = serializers.CharField(
-        max_length=128,
         write_only=True, 
         required=True,  # required for POST & PUT, but - PATCH (with partial=True) not required.
         error_messages={
@@ -92,10 +92,10 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(
-        write_only=True, required=True, min_length=6
+        write_only=True, required=True
     )
     new_password = serializers.CharField(
-        write_only=True, required=True, min_length=6
+        write_only=True, required=True
     )
 
     def validate_new_password(self, new_password):

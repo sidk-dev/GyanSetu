@@ -1,8 +1,5 @@
-from accounts.utils.password_reset_email import send_password_reset_email
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .models import Skill, User
-from .serializers import ChangePasswordSerializer, UserSerializer, validate_password_rules
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 from rest_framework import status
@@ -11,6 +8,11 @@ from rest_framework import status
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
+
+from .utils.districts import DISTRICT_CHOICES
+from .models import Skill, User
+from .serializers import ChangePasswordSerializer, UserSerializer, validate_password_rules
+from accounts.utils.password_reset_email import send_password_reset_email
 
 
 @api_view(['POST'])
@@ -25,6 +27,7 @@ def register(request):
             "token": token.key,
             "data": serializer.data
         })
+    
     return Response(serializer.errors, status=400)
 
 
@@ -37,12 +40,12 @@ def login(request):
         user = User.objects.get(email=data.get("email"))
     except User.DoesNotExist:
         return Response({
-            "error": "User does not exist."
+            "message": "User does not exist."
         }, status=status.HTTP_404_NOT_FOUND)
     
     if not user.check_password(data.get("password")):
         return Response({
-            "error": "User does not exist."
+            "message": "User does not exist."
         }, status=status.HTTP_404_NOT_FOUND)
     
     token, created = Token.objects.get_or_create(user=user)
@@ -79,13 +82,13 @@ def forgot_password(request):
         user = User.objects.get(email=email)
     except User.DoesNotExist:
         return Response({
-            "error": "User does not exist."
+            "message": "User does not exist."
         }, status=status.HTTP_404_NOT_FOUND)
     
     token = PasswordResetTokenGenerator().make_token(user)
     uid = urlsafe_base64_encode(force_bytes(user.pk))
 
-    reset_link = f"http://localhost:8000/api/accounts/reset-password/{uid}/{token}/"
+    reset_link = f"http://localhost:5173/reset-password/{uid}/{token}/"
     # Send Email
     send_password_reset_email(
         "Reset your password",
@@ -100,18 +103,19 @@ def forgot_password(request):
 @permission_classes([AllowAny])
 def reset_password(request, uidb64, token):
     # Access From mail.
-    password = request.data.get("password")
+    password = request.data.get("new_password")
     if not password:
-        return Response({"error": "Please enter the new password."})
+        return Response({"message": "Please enter the new password."},
+                        status=status.HTTP_404_NOT_FOUND)
 
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid) # django ORM automatically converts string "uid" to integer.
     except Exception:
-        return Response({"error": "Invalid link"}, status=400)
+        return Response({"message": "Invalid link"}, status=400)
 
     if not PasswordResetTokenGenerator().check_token(user, token):
-        return Response({"error": "Token expired or invalid"}, status=400)
+        return Response({"message": "Token expired or invalid"}, status=400)
 
     validate_password_rules(password)
     user.set_password(password)
@@ -129,7 +133,7 @@ def account(request):
                 user = User.objects.get(id=id)
             except User.DoesNotExist:
                 return Response({
-                    "error": "User does not exist."
+                    "message": "User does not exist."
                 }, status=status.HTTP_404_NOT_FOUND)
         else:
             user = request.user
@@ -148,3 +152,14 @@ def account(request):
 
         return Response(serializer.errors, status=400)
     
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_districts(request, region):
+    response = {}
+    for district_code, district_value in DISTRICT_CHOICES:
+        district_region = district_code.split("-", 1)[0]
+        if district_region == region:
+            response[district_code] = district_value
+    
+    return Response(response)
