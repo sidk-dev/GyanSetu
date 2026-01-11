@@ -55,7 +55,8 @@ INSTALLED_APPS = [
 
     # Local apps
     'accounts.apps.AccountsConfig',
-    'skills.apps.SkillsConfig'
+    'skills.apps.SkillsConfig',
+    'slots.apps.SlotsConfig'
 ]
 
 AUTH_USER_MODEL = "accounts.User"
@@ -171,3 +172,4 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 
 PASSWORD_RESET_TIMEOUT = 60 * 60  # 1 hour | The number of seconds a password reset link is valid for.
 
+SLOT_CREDIT_COST = 3
