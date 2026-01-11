@@ -55,6 +55,7 @@ INSTALLED_APPS = [
 
     # Local apps
     'accounts.apps.AccountsConfig',
+    'skills.apps.SkillsConfig'
 ]
 
 AUTH_USER_MODEL = "accounts.User"

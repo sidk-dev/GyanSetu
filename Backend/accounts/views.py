@@ -10,7 +10,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 
 from .utils.districts import DISTRICT_CHOICES
-from .models import Skill, User
+from .models import User
 from .serializers import ChangePasswordSerializer, UserSerializer, validate_password_rules
 from accounts.utils.password_reset_email import send_password_reset_email
 
@@ -138,14 +138,22 @@ def account(request):
         else:
             user = request.user
         
-        serializer = UserSerializer(user, context={"is_owner": user.id == request.user.id})
+        serializer = UserSerializer(user, context={
+            "is_owner": user.id == request.user.id,
+            "send_dob": True,
+        })
         return Response({
             "data": serializer.data
         })
     else:
         user = request.user
         data = request.data
-        serializer = UserSerializer(user, data=data, partial=True)
+        serializer = UserSerializer(
+            user, 
+            data=data, 
+            partial=True,
+            context={"send_dob": True}
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

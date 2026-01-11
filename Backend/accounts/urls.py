@@ -11,6 +11,5 @@ urlpatterns = [
     path("forgot-password/", views.forgot_password, name="forgot-password"), # email support.
     path("reset-password/<uidb64>/<token>/", views.reset_password, name="reset-password"),
 
-    #
     path("districts/<str:region>", views.get_districts, name="get-districts")
 ]

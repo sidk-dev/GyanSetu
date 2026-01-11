@@ -23,6 +23,10 @@ class UserSerializer(serializers.ModelSerializer):
             'invalid': "Please provide a valid password."
         },
     )
+    date_of_birth = serializers.DateField(
+        required=False,
+        allow_null=True
+    )
 
     class Meta:
         model = User
@@ -37,7 +41,8 @@ class UserSerializer(serializers.ModelSerializer):
             'region',
             'district',
             'age',
-            'password'
+            'password',
+            'date_of_birth',
         ]
 
     def get_age(self, obj):
@@ -60,6 +65,10 @@ class UserSerializer(serializers.ModelSerializer):
         # It will remove the credits field if the account requester is not the owner.
         if not self.context.get("is_owner"):
             data.pop("credits", None)
+
+        # 🔥 Edit Account view-specific behavior
+        if not self.context.get("send_dob"):
+            data.pop("date_of_birth", None)    # ❌ hide dob
 
         return data
     

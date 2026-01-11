@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import User, Skill
+from skills.models import Skill
+from .models import User
 
 class SkillInline(admin.StackedInline):
     model = Skill
@@ -10,4 +11,3 @@ class UserAdmin(admin.ModelAdmin):
 
 # Register your models here.
 admin.site.register(User, UserAdmin)
-admin.site.register(Skill)
