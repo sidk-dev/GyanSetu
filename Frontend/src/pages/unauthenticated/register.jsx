@@ -1,29 +1,10 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import { useNavigate, Link } from "react-router";
 import { INDIA_REGION_CHOICES } from "../../constants/regions";
-
-const sendRegisterData = async (data) => {
-  const response = await axios.post(
-    "http://127.0.0.1:8000/api/accounts/register/",
-    data,
-    { headers: { "Content-Type": "application/json" } }
-  );
-  return response.data;
-};
-
-const getDistricts = async (region) => {
-  try {
-    const { data } = await axios.get(
-      `http://127.0.0.1:8000/api/accounts/districts/${region}`
-    );
-    return Object.entries(data).map(([value, label]) => ({ value, label }));
-  } catch (e) {
-    throw new Error("Failed to fetch districts");
-  }
-};
+import { getDistricts, registerApi } from "../../api/unauth_api";
+import RegisterSvg from "../../assets/register.svg";
 
 function Register() {
   const navigate = useNavigate();
@@ -53,7 +34,7 @@ function Register() {
   }, [selectedRegion, setValue]);
 
   const { mutate, isPending, isError, error } = useMutation({
-    mutationFn: sendRegisterData,
+    mutationFn: registerApi,
     onSuccess: () => {
       navigate("/login", { replace: true });
     },
@@ -69,72 +50,93 @@ function Register() {
   const passwordError =
     errors.password?.message || error?.response?.data?.password;
   const regionError = errors.region?.message || error?.response?.data?.region;
-  const _districtError =
+  const districtErrorMsg =
     errors.district?.message || error?.response?.data?.district;
 
   return (
-    <div className="flex-1 flex flex-col">
-      <main className="flex-1">
-        <div className="max-w-md mx-auto mt-20 p-6 border rounded">
-          <h1 className="text-3xl mb-6 text-center">Register</h1>
+    <div className="flex flex-1">
+      <div className="flex w-full md:w-1/2 items-center justify-center px-6 py-6">
+        <div className="w-full max-w-md border shadow-lg rounded-xl p-8">
+          <h1 className="text-3xl font-bold text-center text-accent mb-2">
+            Create Account ✨
+          </h1>
+          <p className="text-center text-gray-200 mb-4">
+            Sign up to get started
+          </p>
 
           {/* Server error */}
           {isError && (
-            <p className="mb-4 text-red-600 text-center">
+            <div className="pb-2 text-center text-sm text-red-500">
               {error?.response?.data?.message || "Registration failed"}
-            </p>
+            </div>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} noValidate>
-            {/* First Name */}
-            <div className="mb-4">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            noValidate
+            className="space-y-5"
+          >
+            <div>
+              <label className="block text-sm font-medium text-gray-200 mb-1">
+                First name
+              </label>
               <input
-                placeholder="First Name"
-                className="w-full p-2 border rounded"
+                className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
+                  firstNameError ? "border-red-500" : "border-gray-300"
+                }`}
                 {...register("first_name", {
                   required: "First name is required",
                 })}
               />
               {firstNameError && (
-                <span className="text-red-500 text-sm">{firstNameError}</span>
+                <p className="mt-1 text-sm text-red-500">{firstNameError}</p>
               )}
             </div>
 
-            {/* Last Name */}
-            <div className="mb-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-200 mb-1">
+                Last name
+              </label>
               <input
-                placeholder="Last Name"
-                className="w-full p-2 border rounded"
+                className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
+                  lastNameError ? "border-red-500" : "border-gray-300"
+                }`}
                 {...register("last_name", {
                   required: "Last name is required",
                 })}
               />
               {lastNameError && (
-                <span className="text-red-500 text-sm">{lastNameError}</span>
+                <p className="mt-1 text-sm text-red-500">{lastNameError}</p>
               )}
             </div>
 
-            {/* Email */}
-            <div className="mb-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-200 mb-1">
+                Email address
+              </label>
               <input
                 type="email"
-                placeholder="Email"
-                className="w-full p-2 border rounded"
+                className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
+                  emailError ? "border-red-500" : "border-gray-300"
+                }`}
                 {...register("email", {
                   required: "Email is required",
                 })}
               />
               {emailError && (
-                <span className="text-red-500 text-sm">{emailError}</span>
+                <p className="mt-1 text-sm text-red-500">{emailError}</p>
               )}
             </div>
 
-            {/* Password */}
-            <div className="mb-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-200 mb-1">
+                Password
+              </label>
               <input
                 type="password"
-                placeholder="Password"
-                className="w-full p-2 border rounded"
+                className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
+                  passwordError ? "border-red-500" : "border-gray-300"
+                }`}
                 {...register("password", {
                   required: "Password is required",
                   minLength: {
@@ -144,14 +146,18 @@ function Register() {
                 })}
               />
               {passwordError && (
-                <span className="text-red-500 text-sm">{passwordError}</span>
+                <p className="mt-1 text-sm text-red-500">{passwordError}</p>
               )}
             </div>
 
-            {/* State */}
-            <div className="mb-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-200 mb-1">
+                State / UT
+              </label>
               <select
-                className="w-full p-2 border rounded"
+                className={`w-full rounded-md border px-3 py-2 ${
+                  regionError ? "border-red-500" : "border-gray-300"
+                }`}
                 {...register("region", { required: "State is required" })}
               >
                 <option value="">Select State / UT</option>
@@ -162,15 +168,17 @@ function Register() {
                 ))}
               </select>
               {regionError && (
-                <span className="text-red-500 text-sm">{regionError}</span>
+                <p className="mt-1 text-sm text-red-500">{regionError}</p>
               )}
             </div>
 
-            {/* District */}
-            <div className="mb-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-200 mb-1">
+                District
+              </label>
               <select
-                className="w-full p-2 border rounded disabled:bg-gray-400"
                 disabled={!selectedRegion || loadingDistricts}
+                className="w-full rounded-md border px-3 py-2 disabled:bg-gray-400"
                 {...register("district", {
                   required: "District is required",
                 })}
@@ -187,35 +195,41 @@ function Register() {
                 ))}
               </select>
 
-              {_districtError && (
-                <span className="text-red-500 text-sm">{_districtError}</span>
+              {districtErrorMsg && (
+                <p className="mt-1 text-sm text-red-500">{districtErrorMsg}</p>
               )}
 
               {districtError && (
-                <span className="text-red-500 text-sm">
+                <p className="mt-1 text-sm text-red-500">
                   Failed to load districts
-                </span>
+                </p>
               )}
             </div>
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={isPending}
-              className="w-full bg-cyan-600 text-white py-2 rounded disabled:opacity-50"
+              className="w-full rounded-md bg-cyan-600 py-2.5 text-white font-semibold hover:bg-cyan-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isPending ? "Registering..." : "Register"}
+              {isPending ? "Creating account..." : "Create account"}
             </button>
           </form>
 
-          {/* Footer */}
-          <div className="mt-4 text-center">
-            <Link to="/login" className="text-sm text-accent hover:underline">
-              Already have an account? Login
+          <div className="mt-6 text-center text-sm">
+            <Link to="/login" className="text-accent hover:underline">
+              Already have an account? Log in
             </Link>
           </div>
         </div>
-      </main>
+      </div>
+
+      <div className="hidden md:flex w-1/2 items-center justify-center">
+        <img
+          src={RegisterSvg}
+          alt="Register illustration"
+          className="max-w-[75%]"
+        />
+      </div>
     </div>
   );
 }

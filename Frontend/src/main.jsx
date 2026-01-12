@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
+import App from "./App.jsx";
 
 import {
   createBrowserRouter,
@@ -11,22 +12,40 @@ import { RouterProvider } from "react-router/dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import Layout from "./Layout.jsx";
-import Home from "./pages/main/home.jsx";
-import Login from "./pages/account/login.jsx";
-import Register from "./pages/account/register.jsx";
-import ChangePassword from "./pages/account/password/change_password.jsx";
-import ResetPassword from "./pages/account/password/reset_password.jsx";
-import ForgotPassword from "./pages/account/password/forgot_password.jsx";
+import PublicRoute from "./routes/PublicRoutes.jsx";
+import ProtectedRoute from "./routes/ProtectedRoutes.jsx";
+
+import Home from "./pages/unauthenticated/home.jsx";
+import Login from "./pages/unauthenticated/login.jsx";
+import Register from "./pages/unauthenticated/register.jsx";
+import ForgotPassword from "./pages/unauthenticated/password/forgot-password.jsx";
+import ResetPassword from "./pages/unauthenticated/password/reset-password.jsx";
+
+import Dashboard from "./pages/authenticated/dashboard.jsx";
+import Profile from "./pages/authenticated/profile.jsx";
+import EditProfile from "./pages/authenticated/edit-profile.jsx";
+import ChangePassword from "./pages/authenticated/change-password.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="/" Component={Layout}>
-      <Route path="" Component={Home} />
-      <Route path="login" Component={Login} />
-      <Route path="register" Component={Register} />
-      <Route path="change-password" Component={ChangePassword} />
-      <Route path="forgot-password" Component={ForgotPassword} />
-      <Route path="reset-password/:uidb64/:token" Component={ResetPassword} />
+    <Route path="/" element={<Layout />}>
+      <Route element={<PublicRoute />}>
+        <Route index element={<Home />} />
+        <Route path="login" element={<Login />} />
+        <Route path="register" element={<Register />} />
+        <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route
+          path="reset-password/:uidb64/:token"
+          element={<ResetPassword />}
+        />
+      </Route>
+
+      <Route element={<ProtectedRoute />}>
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="profile" element={<Profile />} />
+        <Route path="edit-profile" element={<EditProfile />} />
+        <Route path="change-password" element={<ChangePassword />} />
+      </Route>
     </Route>
   )
 );
