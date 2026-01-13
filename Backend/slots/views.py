@@ -8,6 +8,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 from django.conf import settings
 
+from accounts.models import User
 from slots.pagination import SlotCursorPagination
 from slots.serializers import SlotSerializer, SlotsSerializer
 from .models import Slot
@@ -16,7 +17,18 @@ from .models import Slot
 def slots(request):
     if request.method == "GET":
         if request.GET.get("is_profile") == "true":
-            slots = Slot.objects.filter(user=request.user)
+            id = request.GET.get("id", None)
+            if id: 
+                try:
+                    user = User.objects.get(id=id)
+                except User.DoesNotExist:
+                    return Response({
+                        "message": "User does not exist."
+                    }, status=status.HTTP_404_NOT_FOUND)
+            else:
+                user = request.user
+
+            slots = Slot.objects.filter(user=user)
         else:
             slots = Slot.objects.exclude(user=request.user).filter(for_user__isnull=True)
         

@@ -1,7 +1,16 @@
 from rest_framework import serializers
+
+from accounts.models import User
 from .models import Slot
 
+class UserSerializerForSkill(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id',  'first_name', 'last_name']
+
 class SlotsSerializer(serializers.ModelSerializer):
+    user = UserSerializerForSkill()
+
     class Meta:
         model = Slot
         exclude = ["for_user"]
