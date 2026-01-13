@@ -29,6 +29,11 @@ export const getProfile = async () => {
   return res.data;
 };
 
+export const getUserProfileById = async (userId) => {
+  const res = await api.get(`accounts/?id=${userId}`);
+  return res;
+};
+
 // Update logged-in user profile
 export const updateProfile = async (data) => {
   const res = await api.patch("accounts/", data);
@@ -55,12 +60,16 @@ export const deleteSlot = async (slotId) => {
 
 // Fetch slots (supports pagination & optional profile filter)
 export const fetchSlots = async ({ pageParam = null, queryKey }) => {
-  const [, isProfile] = queryKey; // isProfile flag from queryKey
-  let url = pageParam ? `slots/?page_cursor=${pageParam}` : "slots/";
-  if (isProfile) {
-    url += pageParam ? "&is_profile=true" : "?is_profile=true";
-  }
+  const [, { isProfile, userId }] = queryKey;
 
+  const params = new URLSearchParams();
+
+  if (pageParam) params.append("page_cursor", pageParam);
+  if (isProfile) params.append("is_profile", "true");
+  if (userId) params.append("id", userId);
+
+  const url = `slots/?${params.toString()}`;
   const { data } = await api.get(url);
+
   return data;
 };
