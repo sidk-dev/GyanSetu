@@ -24,6 +24,9 @@ const primaryBtnClass =
 const menuBtnClass =
   "bg-accent text-primary-dark rounded-md px-4 py-2 text-sm text-center font-medium transition-all duration-200 cursor-pointer";
 
+const popoverButtonClass =
+  "text-left rounded-md px-3 py-2 hover:bg-accent-light transition";
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
@@ -102,30 +105,69 @@ export default function NavBar() {
                   </>
                 ) : (
                   <Popover className="relative">
-                    <PopoverButton className="rounded-md border border-accent text-accent px-4 py-2 cursor-pointer">
-                      <Bars3Icon className="h-4 w-4" />
-                    </PopoverButton>
+                    {({ close }) => (
+                      <>
+                        <PopoverButton
+                          className="
+                            inline-flex items-center justify-center
+                            rounded-md border border-gray-700
+                            bg-gray-900 text-accent
+                            p-2
+                            hover:bg-gray-800 active:bg-gray-700
+                            focus:outline-none focus:ring-2 focus:ring-accent
+                            focus:ring-offset-2 focus:ring-offset-gray-900
+                            transition
+                          "
+                        >
+                          <Bars3Icon className="h-5 w-5" />
+                        </PopoverButton>
 
-                    <PopoverPanel
-                      anchor="bottom"
-                      className="mt-3 flex flex-col gap-1"
-                    >
-                      <Button onClick={logout} className={menuBtnClass}>
-                        Logout
-                      </Button>
-                      <Button
-                        onClick={() => navigate("/change-password")}
-                        className={menuBtnClass}
-                      >
-                        Change Password
-                      </Button>
-                      <Button
-                        onClick={() => navigate("/profile")}
-                        className={menuBtnClass}
-                      >
-                        Profile
-                      </Button>
-                    </PopoverPanel>
+                        <PopoverPanel
+                          anchor="bottom"
+                          className="
+                            z-50 mt-3 w-48 rounded-lg
+                            border border-gray-700 bg-gray-900
+                            shadow-xl shadow-black/30
+                            flex flex-col gap-1 p-1
+                            origin-top-right
+                            transition
+                            data-[enter]:animate-in data-[leave]:animate-out
+                            data-[enter]:fade-in data-[leave]:fade-out
+                            data-[enter]:zoom-in-95 data-[leave]:zoom-out-95
+                          "
+                        >
+                          <Button
+                            onClick={() => {
+                              close();
+                              logout();
+                            }}
+                            className={`${menuBtnClass} ${popoverButtonClass}`}
+                          >
+                            Logout
+                          </Button>
+
+                          <Button
+                            onClick={() => {
+                              close();
+                              navigate("/change-password");
+                            }}
+                            className={`${menuBtnClass} ${popoverButtonClass}`}
+                          >
+                            Change Password
+                          </Button>
+
+                          <Button
+                            onClick={() => {
+                              close();
+                              navigate("/profile");
+                            }}
+                            className={`${menuBtnClass} ${popoverButtonClass}`}
+                          >
+                            Profile
+                          </Button>
+                        </PopoverPanel>
+                      </>
+                    )}
                   </Popover>
                 )}
               </div>
