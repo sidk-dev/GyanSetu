@@ -1,6 +1,6 @@
 from django.core.serializers import serialize
 from django.db import transaction
-from django.db.models import F
+from django.db.models import F, Q
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
@@ -8,6 +8,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 from django.conf import settings
 
+from skills.models import Skill
 from accounts.models import User
 from slots.pagination import SlotCursorPagination
 from slots.serializers import SlotSerializer, SlotsSerializer
@@ -30,7 +31,15 @@ def slots(request):
 
             slots = Slot.objects.filter(user=user)
         else:
-            slots = Slot.objects.exclude(user=request.user).filter(for_user__isnull=True)
+            skill_texts = Skill.objects.filter(
+                user=request.user
+            ).values_list("skill_text", flat=True)
+
+            slots = Slot.objects.filter(
+                for_user__isnull=True
+            ).exclude(
+                Q(user=request.user) | Q(skill_text__in=skill_texts)
+            )
         
         paginator = SlotCursorPagination()
         page = paginator.paginate_queryset(slots, request)
