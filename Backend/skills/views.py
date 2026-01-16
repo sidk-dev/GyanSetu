@@ -4,44 +4,51 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 
+from accounts.models import User
 from skills.serializers import SkillSerializer
 from .models import Skill
 
-@api_view(['POST', 'DELETE'])
-def edit_skill(request):
-    if request.method == "POST":
+@api_view(['DELETE'])
+def edit_skill(request, pk):
+    Skill.objects.filter(user=request.user, id=pk).delete()
+    return Response({"message": "Skill deleted"})
+
+
+@api_view(['GET', 'POST'])
+def skills(request):
+    if request.method == "GET":
+        # if request.GET.get("is_dashboard"):
+        #     # ['City A', 'City B', ...]
+        #     values = Skill.objects.filter(
+        #         user__district=request.user.district
+        #     ).values_list("skill_text", flat=True).distinct()[:5]
+        #     return Response(values)
+        # else:
+
+        id = request.GET.get("id", None)
+        if id: 
+            try:
+                user = User.objects.get(id=id)
+            except User.DoesNotExist:
+                return Response({
+                    "message": "User does not exist."
+                }, status=status.HTTP_404_NOT_FOUND)
+        else:
+            user = request.user
+
+        skills = Skill.objects.filter(user=user)
+        serializer = SkillSerializer(skills, many=True)
+        print(serializer.data)
+        return Response(serializer.data)
+        
+    else:
         data = request.data
         try:
             Skill.objects.create(user=request.user, skill_text=data['skill_text'])
+        except KeyError:
             return Response({
-                "message": "Skill added"
-            })
-        except:
-            return Response({
-                "message": "Can't add skill. Something went wrong."
-            },status=404)
-    else:
-        data = request.data
-        try:
-            Skill.objects.get(user=request.user, id=data['id']).delete()
-            return Response({
-                "message": "Skill deleted"
-            })
-        except:
-            return Response({
-                "message": "Can't delete skill. Something went wrong."
-            },status=404)
-
-
-@api_view(['GET'])
-def skills(request):
-    if request.GET.get("is_dashboard"):
-        # ['City A', 'City B', ...]
-        values = Skill.objects.filter(
-            user__district=request.user.district
-        ).values_list("skill_text", flat=True).distinct()[:5]
-        return Response(values)
-    else:
-        skills = Skill.objects.filter(user=request.user)
-        serializer = SkillSerializer(skills, many=True)
-        return Response(serializer.data)
+                "message": "Please provide the required data."
+            }, status=400)
+        
+        return Response({"message": "Skill added"})
+    
