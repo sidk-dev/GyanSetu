@@ -26,7 +26,7 @@ A clean and intuitive user profile experience.
 
 A lightweight recommendation system that connects the right learners with the right teachers.
 
-* Tag-based matching between offered and wanted skills
+* Tag-based matching between offered and unlisted skills
 * Optional relevance boosts using location and availability
 * Two clear match categories:
   * **People who can teach you**
