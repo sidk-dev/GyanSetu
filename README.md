@@ -39,8 +39,7 @@ A lightweight recommendation system that connects the right learners with the ri
 A simple, seamless scheduling workflow.
 
 * Users can request learning sessions from teachers
-* Teachers can accept or decline requests
-* Session lifecycle: **pending → accepted → completed/canceled**
+* Teachers can book or ignore session (slot) requests.
 * Timezone-aware date & time selection to avoid scheduling confusion
 
 ---
@@ -68,9 +67,8 @@ Builds trust and helps users choose reliable mentors.
 
 ### 📧 Email Notifications
 
-Replaces the messaging system with streamlined communication.
+Provides streamlined communication without relying on in-app messaging.
 
-* Email alerts for session requests, acceptance, or cancellations
-* Reminders before scheduled sessions
-* Notification after session completion prompting reviews
+* Email alerts for session (slot) acceptance
+* Password recovery emails for forgotten passwords
 * Keeps users informed without requiring in-app messaging
