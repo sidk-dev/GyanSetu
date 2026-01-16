@@ -3,6 +3,8 @@ import { PencilIcon } from "@heroicons/react/24/outline";
 import { useNavigate, useSearchParams } from "react-router";
 import { getProfile, getUserProfileById } from "../../api/auth_api";
 import SlotFeed from "../../components/slot/slotFeed";
+import ViewSkills from "../../components/skill/viewSkill";
+import CreateSkillModal from "../../components/skill/createSkill";
 
 function Profile() {
   const navigate = useNavigate();
@@ -106,6 +108,9 @@ function Profile() {
               </div>
             )}
           </div>
+
+          <ViewSkills userId={userId || undefined} />
+          {!userId && <CreateSkillModal />}
         </div>
 
         <div className="lg:w-2/3 flex-1 border rounded-lg shadow-sm p-6">
