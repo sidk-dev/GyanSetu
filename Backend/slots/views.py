@@ -1,6 +1,6 @@
 from django.core.serializers import serialize
 from django.db import transaction
-from django.db.models import F
+from django.db.models import F, Q
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
@@ -8,6 +8,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 from django.conf import settings
 
+from slots.utils.slot_acceptance_email import send_slot_acceptance_email
+from skills.models import Skill
 from accounts.models import User
 from slots.pagination import SlotCursorPagination
 from slots.serializers import SlotSerializer, SlotsSerializer
@@ -30,7 +32,15 @@ def slots(request):
 
             slots = Slot.objects.filter(user=user)
         else:
-            slots = Slot.objects.exclude(user=request.user).filter(for_user__isnull=True)
+            skill_texts = Skill.objects.filter(
+                user=request.user
+            ).values_list("skill_text", flat=True)
+
+            slots = Slot.objects.filter(
+                for_user__isnull=True
+            ).exclude(
+                Q(user=request.user) | Q(skill_text__in=skill_texts)
+            )
         
         paginator = SlotCursorPagination()
         page = paginator.paginate_queryset(slots, request)
@@ -85,6 +95,13 @@ def book_slot(request, id):
         # Deduct credits from ,booking user
         request.user.credits = F('credits') - settings.SLOT_CREDIT_COST
         request.user.save(update_fields=['credits'])
+
+    # Temporarily commented to stop unwanted emails.
+    # send_slot_acceptance_email(
+    #     "Your Slot Has Been Accepted!",
+    #     f"Hello {slot.user.first_name},\n\nCongratulations! Your slot has been successfully accepted. Please check your dashboard for details.\n\nBest regards,\nGyanSetu Team",
+    #     slot.user.email
+    # )
 
     return Response({"message": "Slot booked successfully."}, status=200)
 

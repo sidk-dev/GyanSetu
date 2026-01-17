@@ -73,3 +73,28 @@ export const fetchSlots = async ({ pageParam = null, queryKey }) => {
 
   return data;
 };
+
+// Get user's skills
+export const getSkills = async (userId) => {
+  let response;
+
+  if (userId) {
+    response = await api.get(`skills/?id=${userId}`);
+  } else {
+    response = await api.get("skills/");
+  }
+
+  return response.data;
+};
+
+// Save a skill
+export const saveSkill = async (payload) => {
+  const { data } = await api.post("skills/", payload);
+  return data;
+};
+
+// Delete a skill
+export const deleteSkill = async (id) => {
+  const { data } = await api.delete(`skills/${id}/`);
+  return data;
+};
