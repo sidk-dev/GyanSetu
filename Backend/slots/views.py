@@ -8,6 +8,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 from django.conf import settings
 
+from slots.utils.slot_acceptance_email import send_slot_acceptance_email
 from skills.models import Skill
 from accounts.models import User
 from slots.pagination import SlotCursorPagination
@@ -94,6 +95,13 @@ def book_slot(request, id):
         # Deduct credits from ,booking user
         request.user.credits = F('credits') - settings.SLOT_CREDIT_COST
         request.user.save(update_fields=['credits'])
+
+    # Temporarily commented to stop unwanted emails.
+    # send_slot_acceptance_email(
+    #     "Your Slot Has Been Accepted!",
+    #     f"Hello {slot.user.first_name},\n\nCongratulations! Your slot has been successfully accepted. Please check your dashboard for details.\n\nBest regards,\nGyanSetu Team",
+    #     slot.user.email
+    # )
 
     return Response({"message": "Slot booked successfully."}, status=200)
 
