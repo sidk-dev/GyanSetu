@@ -11,9 +11,7 @@ function SlotCard({ slot, userId = null, isProfile = false }) {
 
   const bookingMutation = useMutation({
     mutationFn: () => bookSlot(slot.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["slots"]);
-    },
+    onSuccess: () => queryClient.invalidateQueries(["slots"]),
   });
 
   const deleteMutation = useMutation({
@@ -40,9 +38,7 @@ function SlotCard({ slot, userId = null, isProfile = false }) {
         queryClient.setQueryData(["slots"], context.previousData);
       }
     },
-    onSettled: () => {
-      queryClient.invalidateQueries(["slots"]);
-    },
+    onSettled: () => queryClient.invalidateQueries(["slots"]),
   });
 
   const formatDate = (date) =>
@@ -73,77 +69,82 @@ function SlotCard({ slot, userId = null, isProfile = false }) {
   const endDate = formatDate(slot.end_time);
   const startTime = formatTime(slot.start_time);
   const endTime = formatTime(slot.end_time);
-
   const isSameDay = startDate === endDate;
 
   return (
-    <div className="mb-4 p-5 border rounded-lg shadow-sm h-auto sticky">
-      <div className="flex justify-between items-start mb-2">
+    <div className="mb-5 rounded-xl border border-primary-dark bg-secondary backdrop-blur p-6 shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl ">
+      <div className="flex justify-between items-start gap-4">
         <div>
-          <h3 className="font-semibold text-lg">{slot.skill_text}</h3>
+          <h3 className="text-lg font-semibold text-neutral-light tracking-tight">
+            {slot.skill_text}
+          </h3>
+
           {isProfile ? (
-            <span className="text-sm text-gray-500 cursor-default">
+            <p className="text-sm text-neutral-medium mt-0.5">
               {slot.user.first_name} {slot.user.last_name}
-            </span>
+            </p>
           ) : (
             <button
               onClick={() => navigate(`/profile?id=${slot.user.id}`)}
-              className="text-sm text-cyan-600 hover:underline"
+              className="text-sm text-accent hover:text-accent-light transition"
             >
               {slot.user.first_name} {slot.user.last_name}
             </button>
           )}
         </div>
-        <span className="text-xs text-gray-200">
-          Posted on {formatPostedAt(slot.created_at)}
+
+        <span className="text-xs text-neutral-medium whitespace-nowrap">
+          Posted {formatPostedAt(slot.created_at)}
         </span>
       </div>
 
-      <p className="text-gray-200 mb-4">{slot.description}</p>
+      <p className="mt-4 text-sm leading-relaxed text-neutral-light">
+        {slot.description}
+      </p>
 
-      <div className="text-sm text-gray-200 mb-4">
-        <div className="flex items-center gap-2">
-          <span>📅</span>
+      <div className="mt-6 pt-4 border-t border-primary-dark flex items-center justify-between">
+        <div className="flex items-center gap-2 text-sm text-neutral-medium">
+          <span className="text-base">🕒</span>
           <span>
             {isSameDay
               ? `${startDate} · ${startTime} – ${endTime}`
               : `${startDate} ${startTime} → ${endDate} ${endTime}`}
           </span>
         </div>
-      </div>
 
-      <div className="flex justify-end">
-        {isProfile ? (
-          !userId && (
+        <div>
+          {isProfile ? (
+            !userId && (
+              <Button
+                onClick={() => deleteMutation.mutate()}
+                disabled={deleteMutation.isLoading}
+                className={`rounded-lg px-4 py-2 text-sm font-medium transition
+                bg-error text-white hover:opacity-90
+                ${deleteMutation.isLoading ? "opacity-60 cursor-wait" : ""}`}
+              >
+                {deleteMutation.isLoading ? "Deleting..." : "Delete"}
+              </Button>
+            )
+          ) : (
             <Button
-              onClick={() => deleteMutation.mutate()}
-              disabled={deleteMutation.isLoading}
-              className={`px-4 py-2 rounded-lg font-medium transition
-              bg-red-500 text-white hover:bg-red-600
-              ${deleteMutation.isLoading ? "opacity-60 cursor-wait" : ""}`}
-            >
-              {deleteMutation.isLoading ? "Deleting..." : "Delete"}
-            </Button>
-          )
-        ) : (
-          <Button
-            onClick={() => bookingMutation.mutate()}
-            disabled={booked || bookingMutation.isLoading}
-            className={`px-4 py-2 rounded-lg font-medium transition
+              onClick={() => bookingMutation.mutate()}
+              disabled={booked || bookingMutation.isLoading}
+              className={`rounded-lg px-5 py-2 text-sm font-medium transition-all
               ${
                 booked
-                  ? "bg-green-500 text-white cursor-not-allowed"
-                  : "bg-blue-500 text-white hover:bg-blue-600"
+                  ? "bg-success text-white cursor-not-allowed"
+                  : "bg-accent text-neutral-dark hover:bg-accent-light"
               }
               ${bookingMutation.isLoading ? "opacity-60 cursor-wait" : ""}`}
-          >
-            {booked
-              ? "Booked ✅"
-              : bookingMutation.isLoading
-              ? "Booking..."
-              : "Book"}
-          </Button>
-        )}
+            >
+              {booked
+                ? "Booked"
+                : bookingMutation.isLoading
+                  ? "Booking..."
+                  : "Book Slot"}
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );

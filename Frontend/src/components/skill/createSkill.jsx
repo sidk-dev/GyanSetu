@@ -14,22 +14,17 @@ export default function CreateSkillModal() {
   } = useForm();
   const queryClient = useQueryClient();
 
-  // Mutation to save skill
   const {
     mutate: addSkill,
     isPending,
     isError,
     error,
-    isSuccess,
   } = useMutation({
     mutationFn: saveSkill,
     onSuccess: () => {
-      queryClient.invalidateQueries(["skills"]); // Refresh skills elsewhere
-      reset(); // Clear form
-      setIsOpen(false); // Close modal
-    },
-    onError: (err) => {
-      console.error("Failed to save skill:", err);
+      queryClient.invalidateQueries(["skills"]);
+      reset();
+      setIsOpen(false);
     },
   });
 
@@ -39,7 +34,7 @@ export default function CreateSkillModal() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="rounded-md bg-cyan-600 px-4 py-2 text-white font-medium mt-4 hover:bg-cyan-700"
+        className="mt-4 w-full rounded-lg bg-accent px-4 py-2 font-medium text-neutral-dark transition hover:bg-accent-light"
       >
         Add Skill
       </button>
@@ -47,55 +42,55 @@ export default function CreateSkillModal() {
       <Dialog
         open={isOpen}
         onClose={() => setIsOpen(false)}
-        className="relative z-10"
+        className="relative z-10 "
       >
-        {/* Overlay */}
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" />
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" />
 
-        {/* Centered panel */}
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <DialogPanel className="w-full max-w-md rounded-xl bg-gray-900 p-6 shadow-lg">
-            <DialogTitle className="text-xl font-semibold text-white">
+          <DialogPanel className="w-full max-w-md rounded-xl bg-secondary border border-primary-dark p-6 shadow-xl">
+            <DialogTitle className="text-xl font-semibold text-neutral-light">
               Add New Skill
             </DialogTitle>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="mt-5 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-200 mb-1">
+                <label className="block text-sm font-medium text-neutral-medium mb-1">
                   Skill Name
                 </label>
                 <input
                   type="text"
                   placeholder="Enter skill"
                   {...register("skill_text", { required: "Skill is required" })}
-                  className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
-                    errors.skill_text ? "border-red-500" : "border-gray-300"
+                  className={`w-full rounded-lg bg-bg px-3 py-2 text-neutral-light placeholder-neutral-medium border focus:outline-none focus:ring-2 ${
+                    errors.skill_text
+                      ? "border-error focus:ring-error"
+                      : "border-primary-dark focus:ring-primary-light"
                   }`}
                 />
                 {errors.skill_text && (
-                  <p className="mt-1 text-sm text-red-500">
+                  <p className="mt-1 text-sm text-error">
                     {errors.skill_text.message}
                   </p>
                 )}
                 {isError && error?.response?.data?.message && (
-                  <p className="mt-1 text-sm text-red-500">
+                  <p className="mt-1 text-sm text-error">
                     {error.response.data.message}
                   </p>
                 )}
               </div>
 
-              <div className="flex justify-end gap-2 mt-4">
+              <div className="flex justify-end gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="rounded-md bg-gray-700 px-4 py-2 text-sm font-medium text-white hover:bg-gray-600"
+                  className="rounded-lg px-4 py-2 text-sm font-medium text-neutral-light bg-primary-dark hover:opacity-90 transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="rounded-md bg-cyan-600 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-700 disabled:opacity-50"
+                  className="rounded-lg px-4 py-2 text-sm font-medium text-neutral-dark bg-accent hover:bg-accent-light transition disabled:opacity-50"
                 >
                   {isPending ? "Saving..." : "Save Skill"}
                 </button>

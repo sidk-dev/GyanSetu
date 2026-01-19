@@ -12,13 +12,9 @@ function ChangePassword() {
   const { mutate, isPending, isError, error, isSuccess } = useMutation({
     mutationFn: changePassword,
     onSuccess: () => {
-      // console.log("Password changed successfully");
       localStorage.removeItem("token");
       window.location.href = "/login";
     },
-    // onError: (error) => {
-    //   console.log(error);
-    // },
   });
 
   const onSubmit = (data) => mutate(data);
@@ -31,21 +27,19 @@ function ChangePassword() {
     error?.response?.data?.message || error?.response?.data?.detail;
 
   return (
-    <div className="flex-1 flex flex-col ">
+    <div className="flex-1 flex flex-col bg-bg ">
       <main className="flex-1">
-        <div className="max-w-md mx-auto mt-20 p-8 border rounded-xl shadow-lg">
-          <h1 className="text-3xl mb-6 text-center font-bold text-accent">
+        <div className="max-w-md mx-auto mt-20 p-8 border border-primary-dark rounded-xl shadow-lg bg-secondary">
+          <h1 className="text-3xl mb-6 text-center font-semibold text-neutral-light">
             Change Password
           </h1>
 
-          {/* Server error */}
           {isError && serverMessage && (
-            <p className="mb-4 text-red-500 text-center">{serverMessage}</p>
+            <p className="mb-4 text-error text-center">{serverMessage}</p>
           )}
 
-          {/* Success message */}
           {isSuccess && (
-            <p className="mb-4 text-green-600 text-center">
+            <p className="mb-4 text-success text-center">
               Password changed successfully!
             </p>
           )}
@@ -56,7 +50,7 @@ function ChangePassword() {
             noValidate
           >
             <div>
-              <label className="block text-sm font-medium text-gray-200 mb-1">
+              <label className="block text-sm font-medium text-neutral-medium mb-1">
                 Old Password
               </label>
               <input
@@ -67,17 +61,19 @@ function ChangePassword() {
                   minLength: { value: 6, message: "Minimum 6 characters" },
                   maxLength: { value: 128, message: "Maximum 128 characters" },
                 })}
-                className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
-                  oldPasswordError ? "border-red-500" : "border-gray-300"
+                className={`w-full rounded-lg px-3 py-2 bg-bg text-neutral-light placeholder-neutral-medium border focus:outline-none focus:ring-2 ${
+                  oldPasswordError
+                    ? "border-error focus:ring-error"
+                    : "border-primary-dark focus:ring-primary-light"
                 }`}
               />
               {oldPasswordError && (
-                <p className="mt-1 text-sm text-red-500">{oldPasswordError}</p>
+                <p className="mt-1 text-sm text-error">{oldPasswordError}</p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-200 mb-1">
+              <label className="block text-sm font-medium text-neutral-medium mb-1">
                 New Password
               </label>
               <input
@@ -88,19 +84,21 @@ function ChangePassword() {
                   minLength: { value: 6, message: "Minimum 6 characters" },
                   maxLength: { value: 128, message: "Maximum 128 characters" },
                 })}
-                className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
-                  newPasswordError ? "border-red-500" : "border-gray-300"
+                className={`w-full rounded-lg px-3 py-2 bg-bg text-neutral-light placeholder-neutral-medium border focus:outline-none focus:ring-2 ${
+                  newPasswordError
+                    ? "border-error focus:ring-error"
+                    : "border-primary-dark focus:ring-primary-light"
                 }`}
               />
               {newPasswordError && (
-                <p className="mt-1 text-sm text-red-500">{newPasswordError}</p>
+                <p className="mt-1 text-sm text-error">{newPasswordError}</p>
               )}
             </div>
 
             <button
               type="submit"
               disabled={isPending}
-              className="w-full rounded-md bg-cyan-600 py-2.5 text-white font-semibold hover:bg-cyan-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full rounded-lg bg-accent py-2.5 font-medium text-neutral-dark transition hover:bg-accent-light disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isPending ? "Changing..." : "Change Password"}
             </button>

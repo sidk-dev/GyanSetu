@@ -27,7 +27,7 @@ export const forgotPassword = async (data) => {
 };
 
 // Reset password
-export const resetPassword = async ({ uidb64, token, new_password }) => {
+export const resetPassword = async (uidb64, token, new_password) => {
   const res = await api.post(`accounts/reset-password/${uidb64}/${token}/`, {
     new_password,
   });

@@ -26,16 +26,16 @@ function EditProfile() {
   });
 
   useEffect(() => {
-    if (profile) {
+    if (profile?.data) {
       reset({
-        first_name: profile.data.first_name,
-        last_name: profile.data.last_name,
-        email: profile.data.email,
+        first_name: profile.data.first_name || "",
+        last_name: profile.data.last_name || "",
+        email: profile.data.email || "",
         gender: profile.data.gender || "",
         date_of_birth: profile.data.date_of_birth || "",
         bio: profile.data.bio || "",
-        region: profile.data.region,
-        district: profile.data.district,
+        region: profile.data.region || "",
+        district: profile.data.district || "",
       });
     }
   }, [profile, reset]);
@@ -76,22 +76,22 @@ function EditProfile() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center mt-20 text-gray-600">
+      <div className="flex justify-center mt-20 text-neutral-medium ">
         Loading profile...
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col bg-bg ">
       <main className="flex-1">
-        <div className="max-w-md mx-auto mt-20 p-6 border rounded-lg shadow-sm">
-          <h1 className="text-3xl mb-6 text-center font-semibold">
+        <div className="max-w-md mx-auto mt-20 p-6 border border-primary-dark rounded-xl shadow-lg bg-secondary">
+          <h1 className="text-3xl mb-6 text-center font-semibold text-neutral-light">
             Edit Profile
           </h1>
 
           {isError && backendErrors.non_field_errors && (
-            <p className="mb-4 text-red-600 text-center">
+            <p className="mb-4 text-error text-center">
               {backendErrors.non_field_errors[0]}
             </p>
           )}
@@ -100,43 +100,55 @@ function EditProfile() {
             <div className="mb-4">
               <input
                 placeholder="First Name"
-                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                className={`w-full p-2 rounded-lg bg-bg text-neutral-light placeholder-neutral-medium border focus:outline-none focus:ring-2 ${
+                  firstNameError
+                    ? "border-error focus:ring-error"
+                    : "border-primary-dark focus:ring-primary-light"
+                }`}
                 {...register("first_name", {
                   required: "First name is required",
                 })}
               />
               {firstNameError && (
-                <span className="text-red-500 text-sm">{firstNameError}</span>
+                <span className="text-error text-sm">{firstNameError}</span>
               )}
             </div>
 
             <div className="mb-4">
               <input
                 placeholder="Last Name"
-                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                className={`w-full p-2 rounded-lg bg-bg text-neutral-light placeholder-neutral-medium border focus:outline-none focus:ring-2 ${
+                  lastNameError
+                    ? "border-error focus:ring-error"
+                    : "border-primary-dark focus:ring-primary-light"
+                }`}
                 {...register("last_name", {
                   required: "Last name is required",
                 })}
               />
               {lastNameError && (
-                <span className="text-red-500 text-sm">{lastNameError}</span>
+                <span className="text-error text-sm">{lastNameError}</span>
               )}
             </div>
 
             <div className="mb-4">
               <input
                 disabled
-                className="w-full p-2 border rounded bg-gray-100 cursor-not-allowed"
+                className="w-full p-2 rounded-lg bg-primary-dark text-neutral-medium cursor-not-allowed border border-primary-dark"
                 {...register("email")}
               />
               {emailError && (
-                <span className="text-red-500 text-sm">{emailError}</span>
+                <span className="text-error text-sm">{emailError}</span>
               )}
             </div>
 
             <div className="mb-4">
               <select
-                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                className={`w-full p-2 rounded-lg bg-bg text-neutral-light border focus:outline-none focus:ring-2 ${
+                  genderError
+                    ? "border-error focus:ring-error"
+                    : "border-primary-dark focus:ring-primary-light"
+                }`}
                 {...register("gender")}
               >
                 <option value="">Select Gender</option>
@@ -145,18 +157,22 @@ function EditProfile() {
                 <option value="O">Other</option>
               </select>
               {genderError && (
-                <span className="text-red-500 text-sm">{genderError}</span>
+                <span className="text-error text-sm">{genderError}</span>
               )}
             </div>
 
             <div className="mb-4">
               <input
                 type="date"
-                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                className={`w-full p-2 rounded-lg bg-bg text-neutral-light border focus:outline-none focus:ring-2 ${
+                  dobError
+                    ? "border-error focus:ring-error"
+                    : "border-primary-dark focus:ring-primary-light"
+                }`}
                 {...register("date_of_birth")}
               />
               {dobError && (
-                <span className="text-red-500 text-sm">{dobError}</span>
+                <span className="text-error text-sm">{dobError}</span>
               )}
             </div>
 
@@ -164,17 +180,25 @@ function EditProfile() {
               <textarea
                 placeholder="Bio"
                 rows={3}
-                className="w-full p-2 border rounded resize-none focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                className={`w-full p-2 rounded-lg resize-none bg-bg text-neutral-light placeholder-neutral-medium border focus:outline-none focus:ring-2 ${
+                  bioError
+                    ? "border-error focus:ring-error"
+                    : "border-primary-dark focus:ring-primary-light"
+                }`}
                 {...register("bio")}
               />
               {bioError && (
-                <span className="text-red-500 text-sm">{bioError}</span>
+                <span className="text-error text-sm">{bioError}</span>
               )}
             </div>
 
             <div className="mb-4">
               <select
-                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                className={`w-full p-2 rounded-lg bg-bg text-neutral-light border focus:outline-none focus:ring-2 ${
+                  regionError
+                    ? "border-error focus:ring-error"
+                    : "border-primary-dark focus:ring-primary-light"
+                }`}
                 {...register("region", { required: "State is required" })}
               >
                 <option value="">Select State / UT</option>
@@ -185,13 +209,17 @@ function EditProfile() {
                 ))}
               </select>
               {regionError && (
-                <span className="text-red-500 text-sm">{regionError}</span>
+                <span className="text-error text-sm">{regionError}</span>
               )}
             </div>
 
             <div className="mb-6">
               <select
-                className="w-full p-2 border rounded disabled:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                className={`w-full p-2 rounded-lg bg-bg text-neutral-light border focus:outline-none focus:ring-2 disabled:bg-primary-dark ${
+                  districtError
+                    ? "border-error focus:ring-error"
+                    : "border-primary-dark focus:ring-primary-light"
+                }`}
                 disabled={!selectedRegion || loadingDistricts}
                 {...register("district", { required: "District is required" })}
               >
@@ -207,10 +235,10 @@ function EditProfile() {
                 ))}
               </select>
               {districtError && (
-                <span className="text-red-500 text-sm">{districtError}</span>
+                <span className="text-error text-sm">{districtError}</span>
               )}
               {districtFetchError && (
-                <span className="text-red-500 text-sm">
+                <span className="text-error text-sm">
                   Failed to load districts
                 </span>
               )}
@@ -219,7 +247,7 @@ function EditProfile() {
             <button
               type="submit"
               disabled={isPending}
-              className="w-full bg-cyan-600 text-white py-2 rounded hover:bg-cyan-700 transition disabled:opacity-50"
+              className="w-full bg-accent text-neutral-dark py-2 rounded-lg font-medium transition hover:bg-accent-light disabled:opacity-50"
             >
               {isPending ? "Saving..." : "Save Changes"}
             </button>

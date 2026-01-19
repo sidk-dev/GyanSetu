@@ -4,60 +4,56 @@ import { getSkills, deleteSkill } from "../../api/auth_api";
 function ViewSkills({ userId = null }) {
   const queryClient = useQueryClient();
 
-  // Fetch skills
   const {
     data: skills,
     isLoading,
     isError,
     error,
   } = useQuery({
-    queryKey: ["skills"],
+    queryKey: ["skills", userId],
     queryFn: () => getSkills(userId),
   });
 
-  // Delete skill mutation
   const { mutate: removeSkill, isPending: isDeleting } = useMutation({
     mutationFn: deleteSkill,
     onSuccess: () => {
-      // Refresh the skills list after deletion
       queryClient.invalidateQueries(["skills"]);
-    },
-    onError: (err) => {
-      console.error("Failed to delete skill:", err);
     },
   });
 
-  if (isLoading) return <p className="text-center mt-4">Loading skills...</p>;
+  if (isLoading)
+    return (
+      <p className="text-center mt-6 text-neutral-medium ">Loading skills...</p>
+    );
+
   if (isError)
     return (
-      <p className="text-center mt-4 text-red-500">
+      <p className="text-center mt-6 text-error ">
         {error?.response?.data?.message || "Failed to load skills."}
       </p>
     );
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 border rounded-xl shadow-lg">
-      <h2 className="text-2xl mb-4 font-bold text-center text-accent">
-        Skills
-      </h2>
+    <div className="mt-8 p-6 rounded-xl border border-primary-dark">
+      <h2 className="text-xl mb-5 font-semibold text-neutral-light">Skills</h2>
 
       {skills.length === 0 ? (
-        <p className="text-center text-gray-400">No skills added yet.</p>
+        <p className="text-center text-neutral-medium">No skills added yet.</p>
       ) : (
         <div className="flex flex-wrap gap-3">
           {skills.map((skill) => (
             <div
               key={skill.id}
-              className="flex items-center bg-gray-800 text-white px-3 py-1 rounded-full"
+              className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-bg border border-primary-dark text-neutral-light text-sm"
             >
               <span>{skill.skill_text}</span>
               {!userId && (
                 <button
                   onClick={() => removeSkill(skill.id)}
                   disabled={isDeleting}
-                  className="ml-2 text-red-500 hover:text-red-400 font-bold"
+                  className="text-error hover:opacity-80 font-semibold transition disabled:opacity-50"
                 >
-                  &times;
+                  ×
                 </button>
               )}
             </div>

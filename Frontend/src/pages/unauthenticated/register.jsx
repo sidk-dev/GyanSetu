@@ -22,7 +22,7 @@ function Register() {
   const {
     data: districts = [],
     isLoading: loadingDistricts,
-    isError: districtError,
+    isError: districtFetchError,
   } = useQuery({
     queryKey: ["districts", selectedRegion],
     queryFn: () => getDistricts(selectedRegion),
@@ -35,40 +35,41 @@ function Register() {
 
   const { mutate, isPending, isError, error } = useMutation({
     mutationFn: registerApi,
-    onSuccess: () => {
-      navigate("/login", { replace: true });
-    },
+    onSuccess: () => navigate("/login", { replace: true }),
   });
 
   const onSubmit = (data) => mutate(data);
 
-  const emailError = errors.email?.message || error?.response?.data?.email;
   const firstNameError =
     errors.first_name?.message || error?.response?.data?.first_name;
   const lastNameError =
     errors.last_name?.message || error?.response?.data?.last_name;
+  const emailError = errors.email?.message || error?.response?.data?.email;
   const passwordError =
     errors.password?.message || error?.response?.data?.password;
   const regionError = errors.region?.message || error?.response?.data?.region;
-  const districtErrorMsg =
+  const districtError =
     errors.district?.message || error?.response?.data?.district;
 
+  const inputBase =
+    "w-full rounded-lg px-3 py-2 bg-bg text-neutral-light placeholder-neutral-medium border focus:outline-none focus:ring-2";
+
   return (
-    <div className="flex flex-1">
-      <div className="flex w-full md:w-1/2 items-center justify-center px-6 py-6">
-        <div className="w-full max-w-md border shadow-lg rounded-xl p-8">
-          <h1 className="text-3xl font-bold text-center text-accent mb-2">
-            Create Account ✨
+    <div className="flex flex-1 min-h-screen py-4 bg-bg">
+      {/* Left: Form */}
+      <div className="flex w-full md:w-1/2 items-center justify-center px-6">
+        <div className="w-full max-w-md rounded-xl border border-primary-dark bg-secondary p-8 shadow-lg">
+          <h1 className="text-3xl font-semibold text-center text-neutral-light mb-2">
+            Create Account
           </h1>
-          <p className="text-center text-gray-200 mb-4">
+          <p className="text-center text-neutral-medium mb-6">
             Sign up to get started
           </p>
 
-          {/* Server error */}
           {isError && (
-            <div className="pb-2 text-center text-sm text-red-500">
+            <p className="mb-4 text-center text-sm text-error">
               {error?.response?.data?.message || "Registration failed"}
-            </div>
+            </p>
           )}
 
           <form
@@ -76,89 +77,99 @@ function Register() {
             noValidate
             className="space-y-5"
           >
+            {/* First Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-200 mb-1">
+              <label className="block text-sm font-medium text-neutral-medium mb-1">
                 First name
               </label>
               <input
-                className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
-                  firstNameError ? "border-red-500" : "border-gray-300"
-                }`}
                 {...register("first_name", {
                   required: "First name is required",
                 })}
+                className={`${inputBase} ${
+                  firstNameError
+                    ? "border-error focus:ring-error"
+                    : "border-primary-dark focus:ring-primary-light"
+                }`}
               />
               {firstNameError && (
-                <p className="mt-1 text-sm text-red-500">{firstNameError}</p>
+                <p className="mt-1 text-sm text-error">{firstNameError}</p>
               )}
             </div>
 
+            {/* Last Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-200 mb-1">
+              <label className="block text-sm font-medium text-neutral-medium mb-1">
                 Last name
               </label>
               <input
-                className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
-                  lastNameError ? "border-red-500" : "border-gray-300"
-                }`}
                 {...register("last_name", {
                   required: "Last name is required",
                 })}
+                className={`${inputBase} ${
+                  lastNameError
+                    ? "border-error focus:ring-error"
+                    : "border-primary-dark focus:ring-primary-light"
+                }`}
               />
               {lastNameError && (
-                <p className="mt-1 text-sm text-red-500">{lastNameError}</p>
+                <p className="mt-1 text-sm text-error">{lastNameError}</p>
               )}
             </div>
 
+            {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-gray-200 mb-1">
-                Email address
+              <label className="block text-sm font-medium text-neutral-medium mb-1">
+                Email
               </label>
               <input
                 type="email"
-                className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
-                  emailError ? "border-red-500" : "border-gray-300"
+                {...register("email", { required: "Email is required" })}
+                className={`${inputBase} ${
+                  emailError
+                    ? "border-error focus:ring-error"
+                    : "border-primary-dark focus:ring-primary-light"
                 }`}
-                {...register("email", {
-                  required: "Email is required",
-                })}
               />
               {emailError && (
-                <p className="mt-1 text-sm text-red-500">{emailError}</p>
+                <p className="mt-1 text-sm text-error">{emailError}</p>
               )}
             </div>
 
+            {/* Password */}
             <div>
-              <label className="block text-sm font-medium text-gray-200 mb-1">
+              <label className="block text-sm font-medium text-neutral-medium mb-1">
                 Password
               </label>
               <input
                 type="password"
-                className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
-                  passwordError ? "border-red-500" : "border-gray-300"
-                }`}
                 {...register("password", {
                   required: "Password is required",
-                  minLength: {
-                    value: 6,
-                    message: "Minimum 6 characters",
-                  },
+                  minLength: { value: 6, message: "Minimum 6 characters" },
                 })}
+                className={`${inputBase} ${
+                  passwordError
+                    ? "border-error focus:ring-error"
+                    : "border-primary-dark focus:ring-primary-light"
+                }`}
               />
               {passwordError && (
-                <p className="mt-1 text-sm text-red-500">{passwordError}</p>
+                <p className="mt-1 text-sm text-error">{passwordError}</p>
               )}
             </div>
 
+            {/* Region */}
             <div>
-              <label className="block text-sm font-medium text-gray-200 mb-1">
+              <label className="block text-sm font-medium text-neutral-medium mb-1">
                 State / UT
               </label>
               <select
-                className={`w-full rounded-md border px-3 py-2 ${
-                  regionError ? "border-red-500" : "border-gray-300"
-                }`}
                 {...register("region", { required: "State is required" })}
+                className={`${inputBase} ${
+                  regionError
+                    ? "border-error focus:ring-error"
+                    : "border-primary-dark focus:ring-primary-light"
+                }`}
               >
                 <option value="">Select State / UT</option>
                 {INDIA_REGION_CHOICES.map((state) => (
@@ -168,39 +179,38 @@ function Register() {
                 ))}
               </select>
               {regionError && (
-                <p className="mt-1 text-sm text-red-500">{regionError}</p>
+                <p className="mt-1 text-sm text-error">{regionError}</p>
               )}
             </div>
 
+            {/* District */}
             <div>
-              <label className="block text-sm font-medium text-gray-200 mb-1">
+              <label className="block text-sm font-medium text-neutral-medium mb-1">
                 District
               </label>
               <select
                 disabled={!selectedRegion || loadingDistricts}
-                className="w-full rounded-md border px-3 py-2 disabled:bg-gray-400"
                 {...register("district", {
                   required: "District is required",
                 })}
+                className={`${inputBase} disabled:opacity-60`}
               >
                 <option value="">
                   {loadingDistricts
                     ? "Loading districts..."
                     : "Select District"}
                 </option>
-                {districts.map((district) => (
-                  <option key={district.value} value={district.value}>
-                    {district.label}
+                {districts.map((d) => (
+                  <option key={d.value} value={d.value}>
+                    {d.label}
                   </option>
                 ))}
               </select>
-
-              {districtErrorMsg && (
-                <p className="mt-1 text-sm text-red-500">{districtErrorMsg}</p>
-              )}
-
               {districtError && (
-                <p className="mt-1 text-sm text-red-500">
+                <p className="mt-1 text-sm text-error">{districtError}</p>
+              )}
+              {districtFetchError && (
+                <p className="mt-1 text-sm text-error">
                   Failed to load districts
                 </p>
               )}
@@ -209,7 +219,7 @@ function Register() {
             <button
               type="submit"
               disabled={isPending}
-              className="w-full rounded-md bg-cyan-600 py-2.5 text-white font-semibold hover:bg-cyan-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full rounded-lg bg-accent py-2.5 font-medium text-neutral-dark transition hover:bg-accent-light disabled:opacity-50"
             >
               {isPending ? "Creating account..." : "Create account"}
             </button>
@@ -223,12 +233,9 @@ function Register() {
         </div>
       </div>
 
+      {/* Right: Illustration */}
       <div className="hidden md:flex w-1/2 items-center justify-center">
-        <img
-          src={RegisterSvg}
-          alt="Register illustration"
-          className="max-w-[75%]"
-        />
+        <img src={RegisterSvg} alt="Register" className="max-w-[75%]" />
       </div>
     </div>
   );

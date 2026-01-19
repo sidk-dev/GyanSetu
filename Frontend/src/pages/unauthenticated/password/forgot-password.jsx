@@ -16,29 +16,30 @@ function ForgotPassword() {
 
   const onSubmit = (data) => mutate(data);
 
+  const inputBase =
+    "w-full rounded-lg px-3 py-2 bg-bg text-neutral-light placeholder-neutral-medium border focus:outline-none focus:ring-2";
+
   return (
-    <div className="flex flex-1 items-center justify-center px-6 py-6">
-      <div className="w-full max-w-md border shadow-lg rounded-xl p-8">
-        <h1 className="text-3xl font-bold text-center text-accent mb-2">
-          Forgot Password 🔐
+    <div className="flex flex-1 min-h-screen items-center justify-center bg-bg px-6">
+      <div className="w-full max-w-md rounded-xl border border-primary-dark bg-secondary p-8 shadow-lg">
+        <h1 className="text-3xl font-semibold text-center text-neutral-light mb-2">
+          Forgot Password
         </h1>
-        <p className="text-center text-gray-200 mb-4">
+        <p className="text-center text-neutral-medium mb-6">
           Enter your email to receive a reset link
         </p>
 
-        {/* Server error */}
         {isError && (
-          <div className="pb-2 text-center text-sm text-red-500">
+          <p className="mb-4 text-center text-sm text-error">
             {error?.response?.data?.message ||
               "Failed to request password reset"}
-          </div>
+          </p>
         )}
 
-        {/* Success message */}
         {isSuccess && (
-          <div className="pb-2 text-center text-sm text-green-500">
+          <p className="mb-4 text-center text-sm text-success">
             Check your inbox for the reset link
-          </div>
+          </p>
         )}
 
         <form
@@ -47,27 +48,27 @@ function ForgotPassword() {
           className="space-y-5"
         >
           <div>
-            <label className="block text-sm font-medium text-gray-200 mb-1">
-              Email address
+            <label className="block text-sm font-medium text-neutral-medium mb-1">
+              Email
             </label>
             <input
               type="email"
-              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
-                errors.email ? "border-red-500" : "border-gray-300"
-              }`}
               {...register("email", { required: "Email is required" })}
+              className={`${inputBase} ${
+                errors.email
+                  ? "border-error focus:ring-error"
+                  : "border-primary-dark focus:ring-primary-light"
+              }`}
             />
             {errors.email && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.email.message}
-              </p>
+              <p className="mt-1 text-sm text-error">{errors.email.message}</p>
             )}
           </div>
 
           <button
             type="submit"
             disabled={isPending}
-            className="w-full rounded-md bg-cyan-600 py-2.5 text-white font-semibold hover:bg-cyan-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full rounded-lg bg-accent py-2.5 font-medium text-neutral-dark transition hover:bg-accent-light disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isPending ? "Sending..." : "Send reset link"}
           </button>

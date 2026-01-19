@@ -13,7 +13,6 @@ Sequence Diagram for Slot Creation Using a Database Token
 
 <img width="741" height="581" alt="Slot Creation Sequence Diagram" src="https://github.com/user-attachments/assets/5b0094fd-edb6-47e4-9970-f257e92ea897" />
 
-
 ---
 
 ## 🚀 Features
