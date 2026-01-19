@@ -44,7 +44,9 @@ def slots(request):
 
             slots = Slot.objects.filter(
                 for_user__isnull=True,
-                end_time__gt=now
+                end_time__gt=now,
+                user__region=request.user.region,
+                user__district=request.user.district,
             ).exclude(
                 Q(user=request.user) | Q(skill_text__in=skill_texts)
             )
