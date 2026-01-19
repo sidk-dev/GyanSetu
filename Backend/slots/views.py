@@ -7,6 +7,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 from django.conf import settings
+from django.utils import timezone
 
 from slots.utils.slot_acceptance_email import send_slot_acceptance_email
 from skills.models import Skill
@@ -18,6 +19,8 @@ from .models import Slot
 @api_view(['GET', 'POST'])
 def slots(request):
     if request.method == "GET":
+        now = timezone.now()
+
         if request.GET.get("is_profile") == "true":
             id = request.GET.get("id", None)
             if id: 
@@ -30,14 +33,18 @@ def slots(request):
             else:
                 user = request.user
 
-            slots = Slot.objects.filter(user=user)
+            slots = Slot.objects.filter(
+                user=user,
+                end_time__gt=now
+            )
         else:
             skill_texts = Skill.objects.filter(
                 user=request.user
             ).values_list("skill_text", flat=True)
 
             slots = Slot.objects.filter(
-                for_user__isnull=True
+                for_user__isnull=True,
+                end_time__gt=now
             ).exclude(
                 Q(user=request.user) | Q(skill_text__in=skill_texts)
             )

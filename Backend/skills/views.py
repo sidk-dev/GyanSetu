@@ -38,7 +38,6 @@ def skills(request):
 
         skills = Skill.objects.filter(user=user)
         serializer = SkillSerializer(skills, many=True)
-        print(serializer.data)
         return Response(serializer.data)
         
     else:
