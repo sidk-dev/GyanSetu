@@ -30,7 +30,6 @@ function Profile() {
   }
 
   if (isError) {
-    console.error(error);
     return (
       <div className="flex justify-center mt-20 text-error ">
         Failed to load profile.

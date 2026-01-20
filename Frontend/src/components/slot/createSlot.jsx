@@ -17,7 +17,6 @@ function CreateSlot() {
       reset();
     },
     onError: (error) => {
-      console.error(error);
       alert(
         error?.response?.data?.non_field_errors?.[0] || "Failed to create slot",
       );

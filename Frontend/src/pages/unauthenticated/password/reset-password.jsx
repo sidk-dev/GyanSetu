@@ -7,8 +7,6 @@ function ResetPassword() {
   const { uidb64, token } = useParams();
   const navigate = useNavigate();
 
-  console.log(uidb64, token);
-
   const {
     register,
     handleSubmit,
