@@ -46,8 +46,8 @@ const router = createBrowserRouter(
         <Route path="edit-profile" element={<EditProfile />} />
         <Route path="change-password" element={<ChangePassword />} />
       </Route>
-    </Route>
-  )
+    </Route>,
+  ),
 );
 
 const queryClient = new QueryClient();
@@ -57,5 +57,5 @@ createRoot(document.getElementById("root")).render(
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
     </QueryClientProvider>
-  </StrictMode>
+  </StrictMode>,
 );

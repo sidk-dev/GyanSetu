@@ -2,11 +2,20 @@ import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { createSlot } from "../../api/auth_api";
 
+const getNowISOString = () => {
+  const now = new Date();
+  now.setSeconds(0, 0); // datetime-local does not support seconds well
+  return now.toISOString().slice(0, 16);
+};
+
+const now = getNowISOString();
+
 function CreateSlot() {
   const {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm();
 
@@ -23,6 +32,7 @@ function CreateSlot() {
     },
   });
 
+  const startTime = watch("start_time");
   const onSubmit = (data) => mutation.mutate(data);
 
   return (
@@ -88,8 +98,12 @@ function CreateSlot() {
             </label>
             <input
               type="datetime-local"
+              min={now}
               {...register("start_time", {
                 required: "Start time is required",
+                validate: (value) =>
+                  new Date(value) >= new Date() ||
+                  "Start time must be in the future",
               })}
               className={`w-full rounded-lg px-4 py-2 bg-bg border ${
                 errors.start_time ? "border-error" : "border-primary-dark"
@@ -110,7 +124,19 @@ function CreateSlot() {
             <label className="text-neutral-medium text-sm mb-1">End Time</label>
             <input
               type="datetime-local"
-              {...register("end_time", { required: "End time is required" })}
+              min={now}
+              {...register("end_time", {
+                required: "End time is required",
+                validate: (value) => {
+                  if (new Date(value) < new Date()) {
+                    return "End time must be in the future";
+                  }
+                  if (startTime && new Date(value) <= new Date(startTime)) {
+                    return "End time must be after start time";
+                  }
+                  return true;
+                },
+              })}
               className={`w-full rounded-lg px-4 py-2 bg-bg border ${
                 errors.end_time ? "border-error" : "border-primary-dark"
               } text-neutral-light focus:outline-none focus:ring-2 ${
