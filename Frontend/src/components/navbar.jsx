@@ -27,6 +27,24 @@ const menuBtnClass =
 const popoverButtonClass =
   "text-left rounded-md px-3 py-2 hover:bg-accent-light transition";
 
+const authenticatedMenuItems = [
+  {
+    label: "Profile",
+    onClick: (navigate) => navigate("/profile"),
+  },
+  {
+    label: "Change Password",
+    onClick: (navigate) => navigate("/change-password"),
+  },
+  {
+    label: "Logout",
+    onClick: () => {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    },
+  },
+];
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
@@ -35,11 +53,6 @@ export default function NavBar() {
   const location = useLocation();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-
-  const logout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/login";
-  };
 
   return (
     <Disclosure
@@ -52,8 +65,8 @@ export default function NavBar() {
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
             <DisclosureButton className="group inline-flex items-center justify-center rounded-md p-2 text-secondary hover:bg-accent/10 hover:text-accent-light transition cursor-pointer">
               <span className="sr-only">Open main menu</span>
-              <Bars3Icon className="size-6 text-accent group-data-[open]:hidden" />
-              <XMarkIcon className="hidden size-6 text-accent group-data-[open]:block" />
+              <Bars3Icon className="size-6 text-accent group-data-open:hidden" />
+              <XMarkIcon className="hidden size-6 text-accent group-data-open:block" />
             </DisclosureButton>
           </div>
 
@@ -87,7 +100,7 @@ export default function NavBar() {
                           location.pathname === item.href
                             ? "bg-accent text-primary-dark"
                             : "hover:bg-accent/20 hover:text-accent-light",
-                          "rounded-md px-4 py-2 text-sm font-medium transition"
+                          "rounded-md px-4 py-2 text-sm font-medium transition",
                         )}
                       >
                         {item.name}
@@ -131,40 +144,23 @@ export default function NavBar() {
                             flex flex-col gap-1 p-1
                             origin-top-right
                             transition
-                            data-[enter]:animate-in data-[leave]:animate-out
-                            data-[enter]:fade-in data-[leave]:fade-out
-                            data-[enter]:zoom-in-95 data-[leave]:zoom-out-95
+                            data-enter:animate-in data-leave:animate-out
+                            data-enter:fade-in data-leave:fade-out
+                            data-enter:zoom-in-95 data-leave:zoom-out-95
                           "
                         >
-                          <Button
-                            onClick={() => {
-                              close();
-                              logout();
-                            }}
-                            className={`${menuBtnClass} ${popoverButtonClass}`}
-                          >
-                            Logout
-                          </Button>
-
-                          <Button
-                            onClick={() => {
-                              close();
-                              navigate("/change-password");
-                            }}
-                            className={`${menuBtnClass} ${popoverButtonClass}`}
-                          >
-                            Change Password
-                          </Button>
-
-                          <Button
-                            onClick={() => {
-                              close();
-                              navigate("/profile");
-                            }}
-                            className={`${menuBtnClass} ${popoverButtonClass}`}
-                          >
-                            Profile
-                          </Button>
+                          {authenticatedMenuItems.map((item) => (
+                            <Button
+                              key={item.label}
+                              onClick={() => {
+                                close();
+                                item.onClick(navigate);
+                              }}
+                              className={`${menuBtnClass} ${popoverButtonClass}`}
+                            >
+                              {item.label}
+                            </Button>
+                          ))}
                         </PopoverPanel>
                       </>
                     )}
@@ -190,7 +186,7 @@ export default function NavBar() {
                     location.pathname === item.href
                       ? "bg-accent text-primary-dark"
                       : "hover:bg-accent/20 hover:text-accent-light",
-                    "block rounded-md px-4 py-2 text-base font-medium transition cursor-pointer"
+                    "block rounded-md px-4 py-2 text-base font-medium transition cursor-pointer",
                   )}
                 >
                   {item.name}
@@ -205,9 +201,17 @@ export default function NavBar() {
               </Link>
             </>
           ) : (
-            <Button onClick={logout} className={menuBtnClass}>
-              Logout
-            </Button>
+            <div className="space-y-2">
+              {authenticatedMenuItems.map((item) => (
+                <Button
+                  key={item.label}
+                  onClick={() => item.onClick(navigate)}
+                  className={`${menuBtnClass} block w-full ${popoverButtonClass}`}
+                >
+                  {item.label}
+                </Button>
+              ))}
+            </div>
           )}
         </div>
       </DisclosurePanel>
