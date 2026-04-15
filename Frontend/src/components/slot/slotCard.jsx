@@ -73,9 +73,9 @@ function SlotCard({ slot, userId = null, isProfile = false }) {
 
   return (
     <div className="mb-5 rounded-xl border border-primary-dark bg-secondary backdrop-blur p-6 shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl ">
-      <div className="flex justify-between items-start gap-4">
-        <div>
-          <h3 className="text-lg font-semibold text-neutral-light tracking-tight">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 sm:gap-4">
+        <div className="min-w-0">
+          <h3 className="text-lg font-semibold text-neutral-light tracking-tight wrap-break-word">
             {slot.skill_text}
           </h3>
 
@@ -93,19 +93,19 @@ function SlotCard({ slot, userId = null, isProfile = false }) {
           )}
         </div>
 
-        <span className="text-xs text-neutral-medium whitespace-nowrap">
+        <span className="text-xs text-neutral-medium sm:whitespace-nowrap">
           Posted {formatPostedAt(slot.created_at)}
         </span>
       </div>
 
-      <p className="mt-4 text-sm leading-relaxed text-neutral-light">
+      <p className="mt-4 text-sm leading-relaxed text-neutral-light wrap-break-word">
         {slot.description}
       </p>
 
-      <div className="mt-6 pt-4 border-t border-primary-dark flex items-center justify-between">
-        <div className="flex items-center gap-2 text-sm text-neutral-medium">
+      <div className="mt-6 pt-4 border-t border-primary-dark flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+        <div className="flex items-start sm:items-center gap-2 text-sm text-neutral-medium min-w-0">
           <span className="text-base">🕒</span>
-          <span>
+          <span className="wrap-break-word">
             {isSameDay
               ? `${startDate} · ${startTime} – ${endTime}`
               : `${startDate} ${startTime} → ${endDate} ${endTime}`}

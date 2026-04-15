@@ -1,17 +1,29 @@
 import CreateSlot from "../../components/slot/createSlot";
 import SlotFeed from "../../components/slot/slotFeed";
 
+const layoutClassName =
+  "relative flex-1 flex flex-col lg:flex-row items-start px-4 sm:px-6 lg:px-10 py-5 sm:py-8 gap-5 sm:gap-7";
+const createSlotPanelClassName =
+  "w-full lg:w-1/3 lg:sticky lg:top-20 lg:self-start";
+const feedPanelClassName = "w-full lg:w-2/3 min-w-0 flex-1 flex flex-col gap-5";
+
 export default function Dashboard() {
   return (
-    <div className="flex-1 flex flex-col bg-bg min-h-screen ">
-      <main className="flex-1 flex flex-col lg:flex-row items-start px-4 sm:px-6 lg:px-12 py-8 gap-8">
-        <div className="lg:w-1/3 sticky top-20 self-start">
+    <div className="flex-1 flex flex-col bg-bg min-h-screen">
+      <main className={layoutClassName}>
+        <section
+          className={`${createSlotPanelClassName} rounded-2xl border border-primary-dark/70 bg-secondary/85 p-2 sm:p-3 shadow-xl backdrop-blur-sm`}
+          aria-label="Create slot"
+        >
           <CreateSlot />
-        </div>
+        </section>
 
-        <div className="lg:w-2/3 flex-1 flex flex-col gap-4">
+        <section
+          className={`${feedPanelClassName} rounded-2xl border border-primary-dark/70 bg-secondary/70 p-2 sm:p-3 shadow-xl backdrop-blur-sm`}
+          aria-label="Slot feed"
+        >
           <SlotFeed isProfile={false} />
-        </div>
+        </section>
       </main>
     </div>
   );
