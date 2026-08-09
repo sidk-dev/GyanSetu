@@ -177,7 +177,7 @@ The frontend interacts with these endpoints using **Axios** combined with **Reac
 
 ---
 
-## 🖼️ Architecture Diagram
+## Diagram(s)
 
 Sequence Diagram for Slot Creation Using a Database Token
 
